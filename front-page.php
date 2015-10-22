@@ -50,12 +50,14 @@
 
     </div>
 
-    <section class="mt-lg">
+    <section class="mt-md">
         <div class="container">
             <div class="row">
                 <div class="col-md-7">
                     <section class="noticias noticias-home">
+
                         <ul class="not-list list-unstyled destaques">
+                            <h2 class="not-hat"><a href="#">Notícias</a></h2>
                             <li>
                                 <article class="not-fill">
                                     <div class="not-text">
@@ -205,7 +207,7 @@
                             </div>
                         </div>
                     </section>
-                    <section class="agenda">
+                    <section class="custom-box">
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <h2>Agenda da Secretaria</h2>
