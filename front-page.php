@@ -50,78 +50,237 @@
 
     </div>
 
+    <section class="mt-lg">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-7">
+                    <section class="noticias noticias-home">
+                        <ul class="not-list list-unstyled destaques">
+                            <li>
+                                <article class="not-fill">
+                                    <div class="not-text">
+                                        <header class="not-titulo">
+                                            <h3>
+                                                <a href="#" class="destaque-principal"> Pesquisas empíricas em direito
+                                                    do projeto Pensando o Direito</a>
+                                            </h3>
+                                        </header>
+                                        <p>
+                                            O Projeto Pensando o Direito já publicou mais de 55 volumes e é um dos
+                                            grandes
+                                            indutores da pesquisa empírica em Direito no Brasil. Os coordenadores dos
+                                            estudos
+                                            são selecionados por meio de chamadas públicas divulgadas aqui no portal.
+                                        </p>
 
-<?php get_template_part('front', 'noticias'); ?>
-<?php get_template_part('destaque', 'debates'); ?>
-<?php get_template_part('mini-tutorial'); ?>
-<?php
-$fp_pub_query = new WP_Query(array(
-    'post_type' => 'publicacao',
-    'posts_per_page' => 1,
-    'order' => 'DESC',
-    'orderby' => 'meta_value_num',
-    'meta_query' => array(
-        array(
-            'key' => 'pub_number',
-            'type' => 'NUMERIC'
-        )
-    )
-));
+                                        <p class="not-tag"><a href="#">Pesquisas</a></p>
+                                    </div>
+                                </article>
+                            </li>
+                            <li>
+                                <article class="not-fill">
+                                    <div class="not-text">
+                                        <header class="not-titulo">
+                                            <h3>
+                                                <a href="#">Senado Federal aprovou o projeto que cria uma nova Lei de
+                                                    Migração para o país</a>
+                                            </h3>
+                                        </header>
+                                        <p class="not-tag"><a href="#">Pesquisas</a>, <a href="#">Entrevistas</a></p>
+                                    </div>
+                                </article>
 
-if ($fp_pub_query->have_posts()) {
-    $fp_pub_query->the_post(); ?>
-    <div class="container">
-        <div class="row mt-lg" id="publicacoes">
-            <div class="col-md-8" id="publicacao-destaque">
-                <h2 class="font-roboto red">Publicações da Série Pensando o Direito</h2>
+                            </li>
+                            <li>
+                                <article class="not-fill has-image">
+                                    <div class="not-image">
+                                        <img
+                                            src="<?php echo get_stylesheet_directory_uri(); ?>/images/foto-destaque.jpg"
+                                            class="img-adptive"/>
+                                    </div>
+                                    <div class="not-text">
+                                        <header class="not-titulo">
+                                            <h3>
+                                                <a href="#">Rosana Denaldi fala sobre a pesquisa PEUC e IPTU progressivo
+                                                    no tempo</a>
+                                            </h3>
+                                        </header>
+                                        <p>
+                                            O Projeto Pensando o Direito já publicou mais de 55 volumes e é um dos
+                                            grandes
+                                            indutores da pesquisa empírica em Direito no Brasil. Os coordenadores dos
+                                            estudos
+                                            são selecionados por meio de chamadas públicas divulgadas aqui no portal.
+                                        </p>
 
-                <div class="row mt-md">
-                    <div class="col-xs-12 col-sm-4 text-center">
-                        <a href="<?php echo get_post_permalink(); ?>" class="nounderline">
-                            <div class="destaque text-center">
-                                <p><?php the_title(); ?></p>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="description col-xs-12 col-sm-8">
-                        <a href="<?php echo get_post_permalink(); ?>" class="nounderline">
-                            <h4 class="font-roboto red">
-                                Volume <?php echo get_post_meta(get_the_ID(), 'pub_number', true); ?></h4>
-                        </a>
+                                        <p class="not-tag"><a href="#">Pesquisas</a>, <a href="#">Entrevistas</a></p>
+                                    </div>
+                                </article>
+                            </li>
+                        </ul>
+                        <ul class="not-list list-unstyled mt-md">
+                            <h2 class="not-hat"><a href="#">Debates públicos</a></h2>
+                            <li>
+                                <article class="not-fill">
+                                    <div class="not-text">
+                                        <header class="not-titulo">
+                                            <h3>
+                                                <a href="#">Pesquisas empíricas em direito do projeto Pensando o
+                                                    Direito</a>
+                                            </h3>
+                                        </header>
+                                    </div>
+                                </article>
+                            </li>
+                            <li>
+                                <article class="not-fill">
+                                    <div class="not-text">
+                                        <header class="not-titulo">
+                                            <h3>
+                                                <a href="#">Rosana Denaldi fala sobre a pesquisa PEUC e IPTU progressivo
+                                                    no tempo</a>
+                                            </h3>
+                                        </header>
+                                    </div>
+                                </article>
 
-                        <p>
-                            <mark>Data da
-                                publicação: <?php echo get_post_meta(get_the_ID(), 'pub_date', true); ?></mark>
-                        </p>
-                        <p><?php the_excerpt(); ?> <a href="<?php echo get_post_permalink(); ?>">Leia mais</a></p>
+                            </li>
+                        </ul>
+                        <ul class="not-list list-unstyled mt-md">
+                            <h2 class="not-hat"><a href="#">Editais</a></h2>
+                            <li>
+                                <article class="not-fill">
+                                    <div class="not-text">
+                                        <header class="not-titulo">
+                                            <h3>
+                                                <a href="#">Pesquisas empíricas em direito do projeto Pensando o
+                                                    Direito</a>
+                                            </h3>
+                                        </header>
+                                    </div>
+                                </article>
+                            </li>
+                            <li>
+                                <article class="not-fill">
+                                    <div class="not-text">
+                                        <header class="not-titulo">
+                                            <h3>
+                                                <a href="#">Rosana Denaldi fala sobre a pesquisa PEUC e IPTU progressivo
+                                                    no tempo</a>
+                                            </h3>
+                                        </header>
+                                    </div>
+                                </article>
 
-                        <div class="row">
-                            <div class="col-md-12 text-left">
-                                <div class="btn-group mt-sm" role="group">
-                                    <?php
-                                    $dld_file = get_post_meta(get_the_ID(), 'pub_dld_file', true);
-                                    if (!empty($dld_file)) { ?>
-                                        <a href="<?php echo get_post_meta(get_the_ID(), 'pub_dld_file', true); ?>"
-                                           class="btn btn-default"><span class="fa fa-download"></span> BAIXAR</a>
-                                    <?php } else { ?>
-                                        <a href="<?php echo get_post_permalink(); ?>" class="btn btn-default"><span
-                                                class="fa fa-download"></span> BAIXAR</a>
-                                    <?php } ?>
-                                    <a href="<?php echo get_post_permalink(); ?>" class="btn btn-danger">VISUALIZAR</a>
-                                </div>
-                                <p class="mt-md"><a href="<?php echo site_url("/publicacoes"); ?>"><strong>Todas as
-                                            publicações</strong></a></p>
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+                <div class="col-md-5">
+                    <section class="pensando-videos">
+                        <div class="panel panel-default">
+                            <div class="panel-body">
+                                <header>
+                                    <h2><a href="#">Videos</a></h2>
+                                </header>
+                                <section class="embed-responsive embed-responsive-16by9 mt-sm">
+                                    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/G7THEcKWCwo"
+                                            frameborder="0"
+                                            allowfullscreen></iframe>
+                                </section>
+                                <section class="video-description">
+                                    <h3>
+                                        <a href="#">Ana Gabriela Braga fala sobre a pesquisa “Dar à luz na sombra”</a>
+                                    </h3>
+
+                                    <p>
+                                        A doutora em criminologia e professora da Unesp, traz um diagnóstico sobre
+                                        políticas públicas para as mulheres presas no país cujo direito de ser mãe
+                                        muitas vezes é violado
+                                    </p>
+
+                                    <p><a href="#" class="fontsize-sm">Pensando o Direito no <i
+                                                class="fa fa-youtube"></i> youtube</a></p>
+                                </section>
                             </div>
                         </div>
-                    </div>
+                    </section>
+                    <section class="agenda">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h2>Agenda da Secretaria</h2>
+
+                                <p class="text-muted mt-sm"><strong><i class="fa fa-calendar"></i> 26 de julho de 2015 a
+                                        1 de agosto de 2015</strong></p>
+                            </div>
+
+                            <ul class="list-group">
+                                <li class="list-group-item">
+                                    <section>
+                                        <p><strong class="font-roboto red fontsize-lg">27</strong> de julho de 2015 | <i
+                                                class="fa fa-clock-o"></i> Das 9:00 as 10:00 hrs</p>
+
+                                        <p class="mt-sm"><a href="#" class="red"><strong>Lançamento do Intercâmbio
+                                                    SAL/SAJ</strong></a></p>
+
+                                        <p class="fontsize-sm text-muted"><i class="fa fa-map-marker"></i> Local:
+                                            Ministério da Justiça</p>
+                                    </section>
+                                </li>
+                                <li class="list-group-item">
+                                    <section>
+                                        <p><strong class="font-roboto red fontsize-lg">27</strong> de julho de 2015 | <i
+                                                class="fa fa-clock-o"></i> Das 9:00 as 10:00 hrs</p>
+
+                                        <p class="mt-sm"><a href="#" class="red"><strong>Lançamento do Intercâmbio
+                                                    SAL/SAJ</strong></a></p>
+
+                                        <p class="fontsize-sm text-muted"><i class="fa fa-map-marker"></i> Local:
+                                            Ministério da Justiça</p>
+                                    </section>
+                                </li>
+                                <li class="list-group-item">
+                                    <section>
+                                        <p><strong class="font-roboto red fontsize-lg">27</strong> de julho de 2015 | <i
+                                                class="fa fa-clock-o"></i> Das 9:00 as 10:00 hrs</p>
+
+                                        <p class="mt-sm"><a href="#" class="red"><strong>Lançamento do Intercâmbio
+                                                    SAL/SAJ</strong></a></p>
+
+                                        <p class="fontsize-sm text-muted"><i class="fa fa-map-marker"></i> Local:
+                                            Ministério da Justiça</p>
+                                    </section>
+                                </li>
+                            </ul>
+                        </div>
+                    </section>
                 </div>
             </div>
-            <!-- AGENDA -->
-            <div class="col-md-4">
-                <?php get_template_part('agenda'); ?>
+        </div>
+    </section>
+
+
+<?php get_template_part('destaque', 'debates'); ?>
+    <section class="mt-lg">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2 class="font-roboto">Série Pensando o Direito: Publicações</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            foto
+                        </div>
+                        <div class="col"
+                    </div>
+                </div>
+                <div class="col-md-4">
+
+                </div>
             </div>
         </div>
-        <!-- /col-md-4 -->
-    </div>
-<?php }
-get_footer(); ?>
+    </section>
+<?php get_footer(); ?>
