@@ -1,231 +1,449 @@
-<?php
-get_header();
-
-// Recuperando o "Post de Destaque", levando em consideração os filtros aplicados
-$destaque_query_array = array(
-    'post_type' => 'publicacao',
-    'posts_per_page' => 1,
-    'order' => 'DESC',
-    'orderby' => 'meta_value_num',
-    'meta_query' => array(
-        array(
-            'key'   => 'pub_number',
-            'type' => 'NUMERIC'
-        )
-    )
-);
-if ( !empty($_POST) ) {
-    if ( isset($_POST['filter-name']) ) {
-        $destaque_query_array['s'] = $_POST['filter-name'];
-    }
-    if ( isset($_POST['sort-option']) ) {
-        switch ($_POST['sort-option']) {
-            case 'pub_number':
-                $destaque_query_array['orderby'] = 'meta_value_num';
-                $destaque_query_array['meta_key'] = 'pub_number';
-                break;
-            case 'title':
-                $destaque_query_array['orderby'] = 'title';
-                break;
-        }
-    } else {
-      $pubs_args['orderby'] = 'meta_value_num';
-      $pubs_args['meta_key'] = 'pub_number';
-    }
-    if ( isset($_POST['sort-order']) ) {
-      $pubs_args['order'] = $_POST['sort-order'];
-    } else {
-      $pubs_args['order'] = 'DESC';
-    }
-}
-
-query_posts($destaque_query_array);
-
-$pub_ids = array();
-
-//TODO: Como adicionar diversos autores e mostrá-los?
-$autores = false;
-
-//Função para filtrar o tamanho do 'excerpt'
-//  focada na publicação em destaque
-function custom_excerpt_length_530( $length ) {
-  return 530;
-}
-
-//Função para filtrar o tamanho do 'excerpt'
-//  focada nas publicações listadas
-function custom_excerpt_length_200( $length ) {
-  return 200;
-}
-add_filter( 'excerpt_length', 'custom_excerpt_length_530', 999 );
-
-//Salvando ID da publicação em destaque
-$destaqueID = get_the_ID();
-?>
-<div class="conteudo">
-  <div class="container mt-sm">
-    <div class="row">
-      <div class="col-md-12">
-        <h2 class="font-roboto red">
-        <a href="<?php echo site_url("/"); ?>"><?php echo get_bloginfo('title'); ?></a>
-        </h2>
-      </div>
-    </div>
-  </div>
-  <div class="container">
-    <div class="row mt-md" id="publicacoes">
-      <div class="col-md-8">
-        <!-- TODO: Automatizar a publicação em destaque.... Como? -->
-        <div class="panel panel-default" id="publicacao-destaque">
-          <div class="panel-heading">
-            <!-- TODO: colocar panel title, retornar para h3, remover mb-0 mt-0 -->
-            <h5 class="font-roboto red mb-0 mt-0">
-            Publicação em Destaque
-            </h5>
-          </div><?php the_post(); ?>
-          <div class="panel-body">
-            <div class="col-xs-6 col-md-4">
-              <a href="<?php echo get_post_permalink(); ?>" class="nounderline">
-                <div class="destaque text-center">
-                  <p><?php the_title_limit(70); ?></p>
-                </div>
-              </a>
-            </div>
-            <div class="description col-md-8">
-              <h4 class="font-roboto red"><a href="<?php echo get_post_permalink(); ?>">Volume <?php echo get_post_meta(get_the_ID(), 'pub_number', true); ?></a></h4>
-                <p><mark>Data: <?php echo get_post_meta(get_the_ID(), 'pub_date', true); ?></mark></p>
-                <p><?php the_excerpt(); ?><a href="<?php echo get_post_permalink(); ?>">Leia mais</a></p>
-                <?php if ($autores) { ?>
-                  <p>
-                  </p> <?php } ?>
-                <div class="row">
-                  <div id="social-bar" class="col-md-4">
-                    <?php get_template_part('part', 'social'); ?>
-                  </div>
-                  <div class="col-md-8 text-right">
-                    <div class="btn-group mt-sm" role="group">
-                      <div class="btn-group mt-sm" role="group">
-                        <a href="<?php echo get_post_meta(get_the_ID(), 'pub_dld_file', true); ?>" class="btn btn-default"><span class="fa fa-download"></span> BAIXAR</a>
-                      </div>
-                      <div class="btn-group mt-sm" role="group">
-                        <a href="<?php echo get_post_permalink(); ?>" class="btn btn-default btn-danger">VISUALIZAR</a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div><!-- Fim da Publicação em destaque -->
-        </div>
-        <div class="col-md-4">
-          <div class="panel panel-default" id="info-publicacao">
-            <div class="panel-heading">
-              <!-- TODO: colocar panel title, retornar para h3, remover mb-0 mt-0 -->
-              <h5 class="font-roboto red mb-0 mt-0">Sobre Publicações</h5>
-            </div>
-            <div class="panel-body">
-              <div class="description">
-                <p>Apresentamos aqui a Série Pensando o Direito: pesquisas que partem da observação da realidade e do diálogo entre mais de um campo do saber para compreender grandes temas e orientar o governo em sua capacidade de atuar  sobre a vida dos cidadãos por meio de políticas públicas.</p>
-                <p>Pensar o Direito não significa teorizá-lo, mas buscar, na prática, respostas que possam colaborar para a criação e para o aperfeiçoamento de leis e instituições. Com dados concretos, estas publicações apresentam soluções de real potencial transformador, contribuindo para a consolidação do processo democrático de produção de normas. Esse é o objetivo do Ministério da Justiça.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="container mt-sm">
-      <form id="sort-filter-form" action="<?php echo get_post_type_archive_link('publicacao'); ?>" method="post">
+<?php get_header(); ?>
+<div id="publicacoes">
+    <div class="container">
         <div class="row">
-          <div class="col-sm-10">
-            <div class="input-group">
-              <input type="text" name="filter-name" class="form-control" placeholder="Buscar publicação..." value="<?php if (isset($_POST['filter-name']) && $_POST['filter-name'] != "") {
-                echo $_POST['filter-name'];
-              } ?>">
-              <span class="input-group-btn">
-                <button class="btn btn-default" type="submit" >Buscar</button>
-              </span>
-            </div><!-- /input-group -->
-          </div> <!-- /col-lg -->
-          <div class="col-sm-2">
-            <div class="input-group">
-              <select name="sort-option" class="form-control" onChange="jQuery('#sort-filter-form').submit();">
-                <option disabled <?php
-                  if (!isset($_POST['sort-option'])) {
-                     echo 'selected';
-                  } ?>>Ordenar por:</option>
-                <option value="title" <?php
-                  if (isset($_POST['sort-option']) && $_POST['sort-option'] == "title") {
-                    echo 'selected';
-                  } ?>>Nome</option>
-                <option value="pub_number" <?php
-                  if (isset($_POST['sort-option']) && $_POST['sort-option'] == "pub_number") {
-                    echo 'selected';
-                  } ?>>Volume</option>
-              </select>
-            </div><!-- /input-group -->
-          </div> <!-- /col-lg -->
+            <div class="col-lg-12">
+                <h1 class="font-roboto red">Publicações</h1>
+            </div>
         </div>
-      </form>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="header-categories">
+                    <ul class="list-inline list-categories">
+                        <li class="categories-master">
+                            <a href="#" class="categorie-link">Todas</a>
+                        </li>
+                        <li class="categories-master">
+                            <a href="#" class="categorie-link">100-1</a> <span class="text-muted fontsize-sm">(Descrescente)</span>
+                        </li>
+                        <li class="dropdown categories-master">
+                            <a href="#" class="categorie-link" id="menu-autores" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">Autores <i class="fa fa-caret-down"></i></a>
+                            <ul class="dropdown-menu" aria-labelledby="menu-autores">
+                                <li class="categories-master">
+                                    <a href="#" class="categorie-link">Fulano Silva</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="dropdown categories-master">
+                            <a href="#" class="categorie-link active-box" id="menu-temas" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">Temas <i class="fa fa-caret-down"></i></a>
+                            <ul class="dropdown-menu" aria-labelledby="menu-temas">
+                                <li class="categories-master">
+                                    <a href="#" class="categorie-link">Marco Civil da Internet</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="categories-master">
+                            <a href="#" class="categorie-link">Índice</a>
+                        </li>
+                        <li class="dropdown categories-master">
+                            <a href="#" class="categorie-link" id="menu-mais" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">Mais <i class="fa fa-caret-down"></i></a>
+                            <ul class="dropdown-menu" aria-labelledby="menu-mais">
+                                <li class="categories-master">
+                                    <a href="#" class="categorie-link">Por data</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row text-right fontsize-sm">
+            <div class="col-sm-6 col-sm-offset-2 mt-sm">
+                <div class="btn-group" role="group" aria-label="publicacoes">
+                    <button type="button" class="btn btn-default"><i class="fa fa-chevron-left"></i></button>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                            Publicações de 40 a 49
+                            <i class="fa fa-caret-down"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Publicações de 30 a 39</a></li>
+                            <li><a href="#">Publicações de 20 a 29</a></li>
+                        </ul>
+                    </div>
+                    <button type="button" class="btn btn-default"><i class="fa fa-chevron-right"></i></button>
+                </div>
+            </div>
+            <div class="col-md-4 mt-sm">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Texto ou número desejado">
+                      <span class="input-group-btn">
+                        <button class="btn btn-default" type="button"><i class="fa fa-search"></i></button>
+                      </span>
+                </div>
+            </div>
+        </div>
+        <div class="publicacoes-box mt-md">
+            <div class="col-md-8">
+                <h3><span class="red font-roboto">Última publicação</span>
+                    <small class="ml-lg fontsize-sm"><a href="#" class="blue">Todas as publicações</a></small>
+                </h3>
+                <div class="row mt-md">
+                    <div class="col-sm-4">
+                        <div class="capa-principal">
+                            <p class="fontsize-lg"><strong>Série Pensando o Direito</strong></p>
+
+                            <p class="fontsize-lg">Volume <br/> <span class="volume">52</span></p>
+                        </div>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="descricao">
+                            <h4><strong><a href="#" class="red">Violência contra a Mulher e as Práticas
+                                        Institucionais</a></strong></h4>
+
+                            <p>A Lei Maria da Penha é considerada um marco legislativo na proteção à
+                                mulher vítima de violência doméstica e familiar, seja pela ampla
+                                definição de violência</p>
+
+                            <p>
+                                <small class="text-muted">
+                                    Publicado em: 24 de julho de 2015<br/>
+                                    Coordenação: <a href="#">Ana Gabriela Mendes Braga</a> e <a
+                                        href="#">Bruna Angotti</a>
+                                </small>
+                            </p>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <a href="#" class="btn btn-default"><i class="fa fa-download"></i>
+                                    Download
+                                    desta publicação
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="list-inline social-icons text-muted mt-0">
+                                    <li class="social-icons-rounded">
+                                        <a href="https://www.facebook.com/projetopd" target="_blank"
+                                           class="btn btn-rounded text-muted" data-toggle="tooltip"
+                                           data-placement="top" title="Compartilhe no Facebook"><i
+                                                class="fa fa-facebook"></i></a>
+                                    </li>
+                                    <li class="social-icons-rounded">
+                                        <a href="https://twitter.com/projetopd" target="_blank"
+                                           class="btn btn-rounded text-muted" data-toggle="tooltip"
+                                           data-placement="top" title="Compartilhe no Twitter"><i
+                                                class="fa fa-twitter"></i></a>
+                                    </li>
+                                    <li class="social-icons-rounded">
+                                        <a href="https://www.youtube.com/user/pensandoodireito"
+                                           target="_blank" class="btn btn-rounded text-muted"
+                                           data-toggle="tooltip"
+                                           data-placement="top" title="Compartilhe no YouTube"><i
+                                                class="fa fa-youtube"></i></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <!--<div class="well publicacoes-oquee">
+
+                    <h4 class="font-roboto red">
+                        <strong>
+                            Série Pensando o Direito:<br/>
+                            O que são as Publicações?
+                        </strong>
+                    </h4>
+
+                    <p>
+                        Desde a criação do Projeto Pensando o Direito, as pesquisas desenvolvidas
+                        pelas
+                        equipes contratadas resultam em relatórios completos e em publicações
+                        resumidas
+                        que sintetizam os principais dados levantados a partir dos processos de
+                        investigação desenvolvidos.
+                    </p>
+
+                    <p>
+                        <strong><a href="#">Todas as publicações</a></strong>
+                    </p>
+
+                    <p>
+                        <strong><a href="#">Editais de participacao</a></strong>
+                    </p>
+
+                </div>-->
+                <!-- imagem do autor -->
+                <img src="<?php echo get_stylesheet_directory_uri(); ?>/images/publicacoes/autor.jpg" class="img-adptive img-thumbnail autor" alt="Autor">
+            </div>
+        </div>
+        <div class="row mt-lg">
+            <div class="col-lg-12">
+                <h2 class="font-roboto red">Publicações anteriores</h2>
+            </div>
+        </div>
+        <div class="row mt-lg">
+            <div class="col-md-12">
+                <ul class="list-unstyled publicacoes-list">
+                    <li>
+                        <div class="row">
+                            <div class="col-sm-2 col-xs-12">
+                                <div class="capa">
+                                    <p class="fontsize-lg">Volume <br/>
+                                        <span class="volume">52</span></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-12">
+                                <div class="descricao">
+                                    <h4 class="red"><strong><a href="#" title="Download desta publicação">Violência
+                                                contra a Mulher e as Práticas
+                                                Institucionais</a></strong></h4>
+
+                                    <p><a data-toggle="collapse" href="#resumo" aria-expanded="false"
+                                          aria-controls="resumo"> Resumo <i class="fa fa-caret-down"></i></a>
+                                    </p>
+
+                                    <p class="collapse" id="resumo">A Lei Maria da Penha é considerada um marco
+                                        legislativo na proteção à
+                                        mulher vítima de violência doméstica e familiar, seja pela ampla
+                                        definição de violência</p>
+
+                                    <p>
+                                        <small class="text-muted"> Publicado em: 24 de julho de 2015<br/>
+                                            Coordenação: <a href="#">Ana Gabriela Mendes Braga</a> e <a
+                                                href="#">Bruna Angotti</a></small>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 col-xs-12">
+                                <p><a href="#" class="btn btn-default"><i class="fa fa-download"></i> Download
+                                        desta publicação </a></p>
+
+                                <ul class="list-inline social-icons text-muted mt-0">
+                                    <li class="social-icons-rounded">
+                                        <a href="https://www.facebook.com/projetopd"
+                                           target="_blank"
+                                           class="btn btn-rounded text-muted"
+                                           data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Compartilhe no Facebook"><i
+                                                class="fa fa-facebook"></i></a>
+                                    </li>
+                                    <li class="social-icons-rounded">
+                                        <a href="https://twitter.com/projetopd"
+                                           target="_blank"
+                                           class="btn btn-rounded text-muted"
+                                           data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Compartilhe no Twitter"><i
+                                                class="fa fa-twitter"></i></a>
+                                    </li>
+                                    <li class="social-icons-rounded">
+                                        <a
+                                            href="https://www.youtube.com/user/pensandoodireito"
+                                            target="_blank" class="btn btn-rounded text-muted"
+                                            data-toggle="tooltip"
+                                            data-placement="top" title="Compartilhe no YouTube"><i
+                                                class="fa fa-youtube"></i></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="row">
+                            <div class="col-sm-2 col-xs-12">
+                                <div class="capa">
+                                    <p class="fontsize-lg">Volume <br/>
+                                        <span class="volume">52</span></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-12">
+                                <div class="descricao">
+                                    <h4 class="red"><strong><a href="#" title="Download desta publicação">Violência
+                                                contra a Mulher e as Práticas
+                                                Institucionais</a></strong></h4>
+
+                                    <p><a data-toggle="collapse" href="#resumo" aria-expanded="false"
+                                          aria-controls="resumo"> Resumo <i class="fa fa-caret-down"></i></a>
+                                    </p>
+
+                                    <p class="collapse" id="resumo">A Lei Maria da Penha é considerada um marco
+                                        legislativo na proteção à
+                                        mulher vítima de violência doméstica e familiar, seja pela ampla
+                                        definição de violência</p>
+
+                                    <p>
+                                        <small class="text-muted"> Publicado em: 24 de julho de 2015<br/>
+                                            Coordenação: <a href="#">Ana Gabriela Mendes Braga</a> e <a
+                                                href="#">Bruna Angotti</a></small>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 col-xs-12">
+                                <p><a href="#" class="btn btn-default"><i class="fa fa-download"></i> Download
+                                        desta publicação </a></p>
+
+                                <ul class="list-inline social-icons text-muted mt-0">
+                                    <li class="social-icons-rounded">
+                                        <a href="https://www.facebook.com/projetopd"
+                                           target="_blank"
+                                           class="btn btn-rounded text-muted"
+                                           data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Compartilhe no Facebook"><i
+                                                class="fa fa-facebook"></i></a>
+                                    </li>
+                                    <li class="social-icons-rounded">
+                                        <a href="https://twitter.com/projetopd"
+                                           target="_blank"
+                                           class="btn btn-rounded text-muted"
+                                           data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Compartilhe no Twitter"><i
+                                                class="fa fa-twitter"></i></a>
+                                    </li>
+                                    <li class="social-icons-rounded">
+                                        <a
+                                            href="https://www.youtube.com/user/pensandoodireito"
+                                            target="_blank" class="btn btn-rounded text-muted"
+                                            data-toggle="tooltip"
+                                            data-placement="top" title="Compartilhe no YouTube"><i
+                                                class="fa fa-youtube"></i></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="row">
+                            <div class="col-sm-2 col-xs-12">
+                                <div class="capa">
+                                    <p class="fontsize-lg">Volume <br/>
+                                        <span class="volume">52</span></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-12">
+                                <div class="descricao">
+                                    <h4 class="red"><strong><a href="#" title="Download desta publicação">Violência
+                                                contra a Mulher e as Práticas
+                                                Institucionais</a></strong></h4>
+
+                                    <p><a data-toggle="collapse" href="#resumo" aria-expanded="false"
+                                          aria-controls="resumo"> Resumo <i class="fa fa-caret-down"></i></a>
+                                    </p>
+
+                                    <p class="collapse" id="resumo">A Lei Maria da Penha é considerada um marco
+                                        legislativo na proteção à
+                                        mulher vítima de violência doméstica e familiar, seja pela ampla
+                                        definição de violência</p>
+
+                                    <p>
+                                        <small class="text-muted"> Publicado em: 24 de julho de 2015<br/>
+                                            Coordenação: <a href="#">Ana Gabriela Mendes Braga</a> e <a
+                                                href="#">Bruna Angotti</a></small>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 col-xs-12">
+                                <p><a href="#" class="btn btn-default"><i class="fa fa-download"></i> Download
+                                        desta publicação </a></p>
+
+                                <ul class="list-inline social-icons text-muted mt-0">
+                                    <li class="social-icons-rounded">
+                                        <a href="https://www.facebook.com/projetopd"
+                                           target="_blank"
+                                           class="btn btn-rounded text-muted"
+                                           data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Compartilhe no Facebook"><i
+                                                class="fa fa-facebook"></i></a>
+                                    </li>
+                                    <li class="social-icons-rounded">
+                                        <a href="https://twitter.com/projetopd"
+                                           target="_blank"
+                                           class="btn btn-rounded text-muted"
+                                           data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Compartilhe no Twitter"><i
+                                                class="fa fa-twitter"></i></a>
+                                    </li>
+                                    <li class="social-icons-rounded">
+                                        <a
+                                            href="https://www.youtube.com/user/pensandoodireito"
+                                            target="_blank" class="btn btn-rounded text-muted"
+                                            data-toggle="tooltip"
+                                            data-placement="top" title="Compartilhe no YouTube"><i
+                                                class="fa fa-youtube"></i></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="row">
+                            <div class="col-sm-2 col-xs-12">
+                                <div class="capa">
+                                    <p class="fontsize-lg">Volume <br/>
+                                        <span class="volume">52</span></p>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-xs-12">
+                                <div class="descricao">
+                                    <h4 class="red"><strong><a href="#" title="Download desta publicação">Violência
+                                                contra a Mulher e as Práticas
+                                                Institucionais</a></strong></h4>
+
+                                    <p><a data-toggle="collapse" href="#resumo" aria-expanded="false"
+                                          aria-controls="resumo"> Resumo <i class="fa fa-caret-down"></i></a>
+                                    </p>
+
+                                    <p class="collapse" id="resumo">A Lei Maria da Penha é considerada um marco
+                                        legislativo na proteção à
+                                        mulher vítima de violência doméstica e familiar, seja pela ampla
+                                        definição de violência</p>
+
+                                    <p>
+                                        <small class="text-muted"> Publicado em: 24 de julho de 2015<br/>
+                                            Coordenação: <a href="#">Ana Gabriela Mendes Braga</a> e <a
+                                                href="#">Bruna Angotti</a></small>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-sm-3 col-xs-12">
+                                <p><a href="#" class="btn btn-default"><i class="fa fa-download"></i> Download
+                                        desta publicação </a></p>
+
+                                <ul class="list-inline social-icons text-muted mt-0">
+                                    <li class="social-icons-rounded">
+                                        <a href="https://www.facebook.com/projetopd"
+                                           target="_blank"
+                                           class="btn btn-rounded text-muted"
+                                           data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Compartilhe no Facebook"><i
+                                                class="fa fa-facebook"></i></a>
+                                    </li>
+                                    <li class="social-icons-rounded">
+                                        <a href="https://twitter.com/projetopd"
+                                           target="_blank"
+                                           class="btn btn-rounded text-muted"
+                                           data-toggle="tooltip"
+                                           data-placement="top"
+                                           title="Compartilhe no Twitter"><i
+                                                class="fa fa-twitter"></i></a>
+                                    </li>
+                                    <li class="social-icons-rounded">
+                                        <a
+                                            href="https://www.youtube.com/user/pensandoodireito"
+                                            target="_blank" class="btn btn-rounded text-muted"
+                                            data-toggle="tooltip"
+                                            data-placement="top" title="Compartilhe no YouTube"><i
+                                                class="fa fa-youtube"></i></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
-    <div class="container mt-md">
-      <div id="lista-publicacoes">
-        <?php
-          //Limitando tamanho do excerto apresentado
-          add_filter( 'excerpt_length', 'custom_excerpt_length_200', 999 );
-
-          $pubs_args = array(
-            'post_type' => 'publicacao',
-            'posts_per_page' => 8,
-            'post__not_in' => array($destaqueID),
-            'order' => 'DESC',
-            'orderby' => 'meta_value_num',
-            'meta_key' => 'pub_number'
-          );
-          if ( !empty($_POST) ) {
-            if ( isset($_POST['filter-name']) ) {
-              $pubs_args['s'] = $_POST['filter-name'];
-            }
-            if ( isset($_POST['sort-option']) ) {
-              switch ($_POST['sort-option']) {
-                case 'pub_number':
-                  $pubs_args['orderby'] = 'meta_value_num';
-                  $pubs_args['meta_key'] = 'pub_number';
-                  break;
-                case 'title':
-                  $pubs_args['orderby'] = 'title';
-                  break;
-              }
-            } else {
-              $pubs_args['orderby'] = 'meta_value_num';
-              $pubs_args['meta_key'] = 'pub_number';
-            }
-            if ( isset($_POST['sort-order']) ) {
-              $pubs_args['order'] = $_POST['sort-order'];
-            } else {
-              $pubs_args['order'] = 'DESC';
-            }
-          }
-
-          $publicacoes = new WP_Query ($pubs_args);
-
-          $counter = 0;
-          while ($publicacoes->have_posts()) : $publicacoes->the_post();
-            if ($counter % 4 == 0) { ?> <div class="row"> <?php }
-            get_template_part('publicacao','card');
-            if (($counter + 1) % 4 == 0) { ?> </div> <?php }
-                $counter++;
-          endwhile;
-        ?>
-      </div>
-      <script>
-        var publicacoesPaginasMaximas = <?php echo $publicacoes->max_num_pages; ?>;
-        var destaqueID = <?php echo $destaqueID; ?>;
-      </script>
-      <div class="row text-center">
-        <button id="mais-publicacoes" type="button" class="btn btn-danger" onclick="carregar_publicacoes()">Mostrar mais publicações</button>
-      </div>
-    </div>
-  </div>
 </div>
-<?php
-get_footer();
+<?php get_footer(); ?>

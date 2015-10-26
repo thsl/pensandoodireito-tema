@@ -122,7 +122,7 @@
 
                             <div class="row mt-md">
                                 <div class="col-sm-4">
-                                    <div class="capa capa-principal">
+                                    <div class="capa-principal">
                                         <p class="fontsize-lg"><strong>Série Pensando o Direito</strong></p>
 
                                         <p class="fontsize-lg">Volume <br/> <span class="volume">52</span></p>
